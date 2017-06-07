@@ -161,6 +161,9 @@ public class Helper {
 		if (c == ',') {
 			return true;
 		}
+		if (c == ':') {
+			return true;
+		}
 		return false;
 	}
 
