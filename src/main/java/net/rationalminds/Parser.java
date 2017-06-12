@@ -520,6 +520,7 @@ public class Parser {
 						tree = Dictionary.patternPredictionTree;
 						month = Dictionary.monthPredictionTree;
 					}
+					tree = Dictionary.patternPredictionTree;
 					continue;
 				} else {
 					// redesigned flow
