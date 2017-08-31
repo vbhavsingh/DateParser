@@ -168,7 +168,8 @@ public class Parser {
 			// if d3= year in YYYY format, then date and month not determinstic
 			// if d1 & d2 <= 12
 			// determine in case one position is dterministic
-			if (d3 > 999 && ((d1 > 12 && d1 < 32) || (d2 > 12 && d2 < 32))) {
+			//TODO
+			if (d3 > 999 && ((d1 > 0 && d1 < 32) || (d2 > 0 && d2 < 32)) && (d1 > 0 && d2 > 0)) {
 				LocalDateModel localDate = getDetemintaionForYyyyPrefix(d1, d2, d3);
 				if (localDate != null) {
 					localDate.setOriginalText(s);
@@ -181,7 +182,8 @@ public class Parser {
 			}
 			// if d3=year in YY format i.e. d3>31 & d3< 100, possible date with
 			// month and day not determinsitic
-			if ((d3 > 31 && d3 < 100) && ((d1 > 12 && d1 < 32) || (d2 > 12 && d2 < 32))) {
+			//TODO
+			if ((d3 > 31 && d3 < 100) && ((d1 > 0 && d1 < 32) || (d2 > 0 && d2 < 32))) {
 				LocalDateModel localDate = getDetemintaionForYyyyPrefix(d1, d2, d3);
 				if (localDate != null) {
 					localDate.setOriginalText(s);
@@ -254,7 +256,7 @@ public class Parser {
 	private LocalDateModel getDetemintaionForYyyyPrefix(int d1, int d2, int pYear) {
 		// if d1 is between 13 and 31, it can be day, depending its valid day of
 		// month d2
-		if (d1 > 12) {
+		if (d1 > 12 && (d2>0 && d2<=12)) {
 			int pDate = d1;
 			int pMonth = d2;
 			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
@@ -263,9 +265,19 @@ public class Parser {
 				return localDate;
 			}
 		}
-		if (d2 > 12) {
+		if (d2 > 12 && (d1>0 && d1<=12)) {
 			int pDate = d2;
 			int pMonth = d1;
+			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
+			if (localDate != null) {
+				// localDate.setConDateFormat("MM-DD-YYYY");
+				return localDate;
+			}
+		}
+		if(d1 <= 12 && d2 <= 12) {
+			// Assumption is MM DD, i.e. Month will always be d2 and date will be d3
+			int pMonth=d1;
+			int pDate=d2;
 			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
 			if (localDate != null) {
 				// localDate.setConDateFormat("MM-DD-YYYY");
@@ -293,7 +305,10 @@ public class Parser {
 		// month should be between 1 & 12, else its not a date
 		if (pMonth > 0 && pMonth < 13) {
 			month = pMonth;
-		} else {
+		}else if(pMonth > 12 && pDay < 13) {
+			month=pDay;
+			pDay = pMonth;
+		}else {
 			return null;
 		}
 		// day should be between 1 & 31 depending on months
@@ -363,7 +378,11 @@ public class Parser {
 		for (int count = 0; count < textLength; count++) {
 
 			char c = text.charAt(count);
-
+			
+			if (i == 0) {
+				tree = Dictionary.patternPredictionTree;
+			}
+			
 			// check for whitespace series
 			if ((i > 1 && possibleDate[i - 1] == 32 && c == 32)) {
 				whitespaceCount++;
@@ -431,9 +450,6 @@ public class Parser {
 					 */
 					if (monthDetermined) {
 						isAlpaNumeric = true;
-						// if(c==32 || Helper.isDelimeter(c)){
-						// continue;
-						// }
 						tree = tree.getChild(marker);
 						/*
 						 * if month is determined, date pattern established and
@@ -544,9 +560,9 @@ public class Parser {
 				 * in case date occour first be sure tree is not null and
 				 * traverse tree with 'M' as root
 				 */
-				if (i == 0) {
-					tree = Dictionary.patternPredictionTree.getChild(marker);
-				}
+				/*if (i == 0) {
+					tree = Dictionary.patternPredictionTree;
+				}*/
 				c = Character.toLowerCase(text.charAt(count));
 				month = month.getChild(c);
 				if (month == null) {

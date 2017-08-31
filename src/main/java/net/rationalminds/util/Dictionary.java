@@ -163,6 +163,18 @@ public class Dictionary {
 			}
 		}
 	}
+	
+	public static String getProbables(PredictionModelNode tree) {
+		if(tree==null) {
+			return "";
+		}
+		List<PredictionModelNode> kids=tree.childern;
+		String pattern=tree.charcter+" -->";
+		for(PredictionModelNode kid:kids) {
+			pattern = pattern +" "+ kid.charcter;
+		}
+		return pattern;
+	}
 
 	public static void printTree(PredictionModelNode tree) {
 

@@ -113,4 +113,12 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8.7</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
