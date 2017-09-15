@@ -1,5 +1,5 @@
 # DateParser
-fast date identifcation and 
+fast date identifcation algoritham. Does not uses regex and is easy on CPU. 
 
 Visit http://coffeefromme.blogspot.com/2015/10/utility-to-extract-date-from-text-with.html for implementation details. 
 
