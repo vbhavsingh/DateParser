@@ -14,15 +14,20 @@ Use with maven
 Supported Date formats
 
 DD[]MM[MMM][]YY[YY]
+
 MM[MMM][]DD[]YY[YY]
+
 YY[YY][]MM[MMM][]DD
 
 Supported Date Time formats
 
 DD[]MM[MMM][]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
+
 MM[MMM][]DD[]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
+
 YY[YY][]MM[MMM][]DD{}HH[24]:mm:ss[.SSS][][AM|PM]
 
 
 *[] Delimiter like / \ - _ . | whitescape etc
+
 *{} Delimiter  _ T whitescape 
