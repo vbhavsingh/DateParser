@@ -8,7 +8,7 @@ package net.rationalminds;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-
+	
 import net.rationalminds.model.DateElement;
 import net.rationalminds.util.Dictionary;
 import net.rationalminds.util.Helper;
@@ -46,6 +46,16 @@ public class Parser {
 				if (element.getTimeFragment() != null) {
 					localdate = putTimeInDate(localdate, element);
 				}
+				String delims = element.getDateFragment().replaceAll("[A-Za-z0-9]", "");
+				String foundFormat = localdate.getIdentifiedDateFormat();
+				if(delims.length()==2) {
+					foundFormat=foundFormat.replaceAll("\\$", String.valueOf(delims.charAt(0)));
+					foundFormat=foundFormat.replaceAll("&", String.valueOf(delims.charAt(1)));
+				}
+				if(element.isIsAlphaNumeric() && Helper.isFullMonth(element.getData())) {
+					foundFormat = foundFormat.replaceAll("MMM", "MMMMM");
+				}
+				localdate.setIdentifiedDateFormat(foundFormat);
 				dateGroups.add(localdate);
 			}
 		}
@@ -60,6 +70,7 @@ public class Parser {
 	private LocalDateModel getDateFromPhrase(DateElement element) {
 		boolean notFound = true;
 		String s = null;
+		String presentDateFormat="";
 		if (element.getTimeFragment() == null) {
 			s = element.getData();
 		} else {
@@ -84,10 +95,19 @@ public class Parser {
 			if (Helper.isDigit(t1)) {
 				year = Integer.parseInt(t1);
 				if (year > 31) {
+					/*determine the format of year to find out present date format*/
+					if(year < 99) {
+						presentDateFormat ="YY$";
+					}
+					else if(year > 999 && year < 10000) {
+						presentDateFormat ="YYYY$";
+					}
 					if (Helper.isDigit(t2)) {
+						presentDateFormat = presentDateFormat +"DD&MMM";
 						day = Integer.parseInt(t2);
 						month = monthToDigit(t3);
 					} else {
+						presentDateFormat = presentDateFormat +"MMM&DD";
 						month = monthToDigit(t2);
 						day = Integer.parseInt(t3);
 					}
@@ -97,6 +117,7 @@ public class Parser {
 					} else {
 						localDate.setOriginalText(element.getData());
 					}
+					localDate.setIdentifiedDateFormat(presentDateFormat);
 					return localDate;
 				}
 			}
@@ -110,10 +131,19 @@ public class Parser {
 			if (Helper.isDigit(t3)) {
 				year = Integer.parseInt(t3);
 				if (year > 31) {
+					/*determine the format of year to find out present date format*/
+					if(year < 99) {
+						presentDateFormat ="YY";
+					}
+					else if(year > 999 && year < 10000) {
+						presentDateFormat ="YYYY";
+					}
 					if (Helper.isDigit(t1)) {
+						presentDateFormat = "DD$MMM&" + presentDateFormat;
 						day = Integer.parseInt(t1);
 						month = monthToDigit(t2);
 					} else {
+						presentDateFormat = "MMM$DD&" + presentDateFormat;
 						month = monthToDigit(t1);
 						day = Integer.parseInt(t2);
 					}
@@ -123,6 +153,7 @@ public class Parser {
 					} else {
 						localDate.setOriginalText(element.getData());
 					}
+					localDate.setIdentifiedDateFormat(presentDateFormat);
 					return localDate;
 				}
 			}
@@ -206,6 +237,7 @@ public class Parser {
 		int min;
 		int sec;
 		int mils = 0;
+		String probableTimeFormat=format;
 
 		StringTokenizer tokenizer = null;
 		// time has miliseconds in it
@@ -215,7 +247,13 @@ public class Parser {
 			min = Integer.parseInt(tokenizer.nextToken());
 			sec = Integer.parseInt(tokenizer.nextToken());
 			mils = Integer.parseInt(tokenizer.nextToken());
-			format = format + ".SSS";
+			//format = format + ".SSS";
+			if(s.contains(".")) {
+				probableTimeFormat = format + ".SSS";	
+			}
+			if(s.contains(",")) {
+				probableTimeFormat = format + ",SSS";	
+			}
 		} else {
 			tokenizer = new StringTokenizer(s, ": ");
 			hour = Integer.parseInt(tokenizer.nextToken());
@@ -226,6 +264,7 @@ public class Parser {
 		if (element.isHasAmPm()) {
 			if (s.contains("pm")) {
 				hour = hour + 12;
+				probableTimeFormat = probableTimeFormat+" aaa";
 			}
 		}
 		if (hour < 24 && min < 60 && sec < 60 && mils < 10000) {
@@ -238,6 +277,8 @@ public class Parser {
 			localdate.setConDateFormat(format);
 			timePiece = localdate.getDateTimeString() + " " + timePiece;
 			localdate.setDateTimeString(timePiece);
+			String sep = (element.getDateTimeSeprator() == 'T')?"'T'":String.valueOf(element.getDateTimeSeprator());
+			localdate.setIdentifiedDateFormat(localdate.getIdentifiedDateFormat()+sep+probableTimeFormat);
 		}
 		return localdate;
 	}
@@ -262,6 +303,12 @@ public class Parser {
 			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
 			if (localDate != null) {
 				// localDate.setConDateFormat("DD-MM-YYYY");
+				if(pYear > 9 & pYear < 100) {
+					localDate.setIdentifiedDateFormat("DD$MM&YY");
+				}
+				if(pYear > 99 & pYear < 10000) {
+					localDate.setIdentifiedDateFormat("DD$MM&YYYY");
+				}
 				return localDate;
 			}
 		}
@@ -271,6 +318,12 @@ public class Parser {
 			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
 			if (localDate != null) {
 				// localDate.setConDateFormat("MM-DD-YYYY");
+				if(pYear > 9 & pYear < 100) {
+					localDate.setIdentifiedDateFormat("MM$DD&YY");
+				}
+				if(pYear > 99 & pYear < 10000) {
+					localDate.setIdentifiedDateFormat("MM$DD&YYYY");
+				}
 				return localDate;
 			}
 		}
@@ -281,6 +334,12 @@ public class Parser {
 			LocalDateModel localDate = getYyyyMmDdProbable(pYear, pMonth, pDate);
 			if (localDate != null) {
 				// localDate.setConDateFormat("MM-DD-YYYY");
+				if(pYear > 9 & pYear < 100) {
+					localDate.setIdentifiedDateFormat("MM$DD&YY");
+				}
+				if(pYear > 99 & pYear < 10000) {
+					localDate.setIdentifiedDateFormat("MM$DD&YYYY");
+				}
 				return localDate;
 			}
 		}
@@ -297,6 +356,7 @@ public class Parser {
 
 	private LocalDateModel getYyyyMmDdProbable(int pYear, int pMonth, int pDay) {
 		boolean isDateProbable = true;
+		String formatProbable="";
 		int year = -100;
 		int month = -100;
 		int day = -100;
@@ -305,9 +365,11 @@ public class Parser {
 		// month should be between 1 & 12, else its not a date
 		if (pMonth > 0 && pMonth < 13) {
 			month = pMonth;
+			formatProbable = "MM&DD";
 		}else if(pMonth > 12 && pDay < 13) {
 			month=pDay;
 			pDay = pMonth;
+			formatProbable = "DD&MM";
 		}else {
 			return null;
 		}
@@ -343,6 +405,13 @@ public class Parser {
 			LocalDateModel localdate = new LocalDateModel();
 			localdate.setDateTimeString(String.format("%04d", year) + "-" + String.format("%02d", month) + "-" + String.format("%02d", day));
 			localdate.setConDateFormat("yyyy-MM-dd");
+			if(year > 9 & year < 100 ) {
+				formatProbable = "YY$" + formatProbable;
+			}
+			if(year > 999 & year < 10000){
+				formatProbable = "YYYY$" + formatProbable;
+			}
+			localdate.setIdentifiedDateFormat(formatProbable);
 			return localdate;
 		}
 		return null;
@@ -366,6 +435,7 @@ public class Parser {
 		int timeFrgLength = 0;
 		char marker = '0';
 		boolean isAlpaNumeric = false;
+		char dateTimeSeprator=32;
 		/*
 		 * to account number of whitespaces for determining start and end
 		 * position of date fragment, as multiple spaces are ignored
@@ -403,7 +473,12 @@ public class Parser {
 				}
 				if (time == null) {
 					if (timeDetermined) {
-						dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength);
+						dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength, dateTimeSeprator);
+					}/*if added as bug fix on date 12/15/2017*/
+					if(isValidTimeFragmentWithEndingDelim(possibleTime)) {
+						possibleTime[timeFrgLength -1] = ' ';
+						possibleDate[i -1] = ' ';
+						dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i - 1, timeFrgLength, dateTimeSeprator);
 					}
 					searchForTimePiece = false;
 					possibleDate = nullifyBuffer(possibleDate);
@@ -417,7 +492,24 @@ public class Parser {
 				} else {
 					if (timeDetermined) {
 						if (count == text.length() - 1 || c == 32) {
-							dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength);
+							dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength, dateTimeSeprator);
+							searchForTimePiece = false;
+							possibleDate = nullifyBuffer(possibleDate);
+							possibleTime = nullifyBuffer(possibleTime);
+							endFoundEarlier = false;
+							time = Dictionary.timePredictionTree;
+							i = 0;
+							whitespaceCount = 0;
+							timeFrgLength = 0;
+							continue;
+						}/* bug fixed dated 12/15/2017*/
+					}else {
+						if(count == text.length() - 1 && time.explictDateFragment == true) {
+							if(Helper.isDigit(c)) {
+								possibleTime[timeFrgLength++] = c;
+								possibleDate[i++] = c;
+							}
+							dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength, dateTimeSeprator);
 							searchForTimePiece = false;
 							possibleDate = nullifyBuffer(possibleDate);
 							possibleTime = nullifyBuffer(possibleTime);
@@ -436,7 +528,7 @@ public class Parser {
 				continue;
 			}
 			/* if current character is Number of separator */
-			if (Helper.isDigit(c) || Helper.isDelimeter(c)) {
+			if (Helper.isDigit(c) || Helper.isDelimeter(c) || Helper.isTimeSeprator(c)) {
 				/*
 				 * if marker was previously set for finding month and current
 				 * char is delimiter or digit, then see if month is determined.
@@ -524,9 +616,10 @@ public class Parser {
 					if (endFoundEarlier) {
 						dateGroups = addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
 						endFoundEarlier = false;
-						if (c == 32) {
+						if (Helper.isTimeSeprator(c)) {
 							searchForTimePiece = true;
 							possibleDate[i++] = c;
+							dateTimeSeprator = c;
 						} else {
 							possibleDate = nullifyBuffer(possibleDate);
 							i = 0;
@@ -571,7 +664,7 @@ public class Parser {
 					 * fragment
 					 */
 					if (endFoundEarlier) {
-						addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
+						dateGroups = addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
 						endFoundEarlier = false;
 					}
 					possibleDate = nullifyBuffer(possibleDate);
@@ -591,7 +684,7 @@ public class Parser {
 		}
 		return dateGroups;
 	}
-
+	
 	/**
 	 * add the date fragment to dategroup with other details
 	 * 
@@ -612,6 +705,23 @@ public class Parser {
 		return dateGroups;
 	}
 
+	   /**
+	    * 
+	    * @param possibleTime
+	    * @return
+	    */
+		private boolean isValidTimeFragmentWithEndingDelim(char[] possibleTime) {
+			String s = new String(possibleTime).trim();
+			String original = new String(possibleTime).trim();
+			s = s.replaceAll("[0-9]", "");
+			if(s.length() > 2 && s.length()<=3) {
+				if(s.startsWith("::") && (original.endsWith(",") || original.endsWith("."))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 	/**
 	 * 
 	 * @param dateGroups
@@ -622,7 +732,7 @@ public class Parser {
 	 * @param timeFrgLength
 	 * @return
 	 */
-	private List<DateElement> addTimeFragment(List<DateElement> dateGroups, char[] possibleDate, char[] possibleTime, int count, int i, int timeFrgLength) {
+	private List<DateElement> addTimeFragment(List<DateElement> dateGroups, char[] possibleDate, char[] possibleTime, int count, int i, int timeFrgLength, char dateTimeSeprator) {
 		if (dateGroups == null) {
 			return null;
 		}
@@ -634,6 +744,7 @@ public class Parser {
 		if (possibleTime[timeFrgLength - 1] == 'm') {
 			ele.setHasAmPm(true);
 		}
+		ele.setDateTimeSeprator(dateTimeSeprator);
 		return dateGroups;
 	}
 

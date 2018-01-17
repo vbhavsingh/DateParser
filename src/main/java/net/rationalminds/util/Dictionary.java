@@ -123,6 +123,7 @@ public class Dictionary {
 		TIME_PATTERN.add("DD:DD:DD,DDD am");
 		TIME_PATTERN.add("DD:DD:DD,DDD pm");
 
+
 		monthPredictionTree.level = 0;
 		monthPredictionTree.charcter = '0';
 
@@ -131,9 +132,14 @@ public class Dictionary {
 
 		timePredictionTree.level = 0;
 		timePredictionTree.charcter = '0';
+		
+		weekPredictionTree.level = 0;
+		weekPredictionTree.charcter = '0';
 
 		buildTree(MONTH_FULL, monthPredictionTree);
 		buildTree(MONTH_SHORT, monthPredictionTree);
+		buildTree(WEEKDAY_FULL, weekPredictionTree);
+		buildTree(WEEKDAY_SHORT, weekPredictionTree);
 		buildTree(PATTERN, patternPredictionTree);
 		buildTree(TIME_PATTERN, timePredictionTree);
 
@@ -199,7 +205,7 @@ public class Dictionary {
 			}
 		}
 		printBuffer.append(line);
-		System.out.println(printBuffer.toString());
+		//System.out.println(printBuffer.toString());
 
 	}
 
@@ -549,4 +555,56 @@ public class Dictionary {
 		return str;
 	}
 
+	public static String getRegexPattern(List<String> treeElements) {
+		PredictionModelNode tree = new PredictionModelNode();
+		buildTree(treeElements, tree);
+		tree = sortTree(tree);
+		printTree(tree);
+		return getRegexPattern(tree);
+	}
+	
+	private static String getRegexPattern(PredictionModelNode tree) {
+		if(isFamilyUnit(tree)) {
+			return getFamilyUnitPattern(tree);
+		}
+		if (tree.hasChildern()) {
+			StringBuilder buffer = new StringBuilder();
+			int i=0;
+			buffer.append(tree.charcter);
+			if(tree.childrenCount() == 1) {
+				buffer.append(getRegexPattern(tree.childern.get(0)));
+				return buffer.toString();
+			}
+			buffer.append("(");
+			for(PredictionModelNode kid:tree.childern) {
+				buffer.append(getRegexPattern(kid));
+				i++;
+				if(i<tree.childrenCount()) {
+					buffer.append("|");
+				}	
+			}
+			buffer.append(")");
+			return buffer.toString();
+		}
+		return String.valueOf(tree.charcter);
+	}
+	
+	private static String getFamilyUnitPattern(PredictionModelNode tree) {
+		StringBuilder buffer = new StringBuilder();
+		if(tree.childern == null) {
+			return buffer.toString();
+		}
+		buffer.append(String.valueOf(tree.charcter));
+		if(tree.childern.size()==1) {
+			buffer.append(tree.childern.get(0).charcter);
+			//buffer.append(")");
+			return buffer.toString();
+		}
+		buffer.append("([");
+		for (PredictionModelNode kid:tree.childern) {
+			buffer.append(kid.charcter);
+		}
+		buffer.append("])");
+		return buffer.toString();
+	}
 }

@@ -27,6 +27,10 @@ public class LocalDateModel {
 	 **/
 	private String conDateFormat;
 	/**
+	 * format in which date is present
+	 */
+	private String identifiedDateFormat;
+	/**
 	 * start of identified text fragment in the source text
 	 */
 	private int start;
@@ -74,11 +78,22 @@ public class LocalDateModel {
 	protected void setEnd(int end) {
 		this.end = end;
 	}
+	
+	
+	public String getIdentifiedDateFormat() {
+		return identifiedDateFormat;
+	}
+
+	public void setIdentifiedDateFormat(String identifiedDateFormat) {
+		this.identifiedDateFormat = identifiedDateFormat;
+	}
 
 	@Override
 	public String toString() {
-		return "LocalDateModel{" + "originalText=" + originalText + ", dateTimeString=" + dateTimeString + ", conDateFormat=" + conDateFormat + ", start=" + start + ", end=" + end
-				+ '}';
+		return "LocalDateModel [originalText=" + originalText + ", dateTimeString=" + dateTimeString + ", conDateFormat=" + conDateFormat + ", identifiedDateFormat="
+				+ identifiedDateFormat + ", start=" + start + ", end=" + end + "]";
 	}
+
+	
 
 }

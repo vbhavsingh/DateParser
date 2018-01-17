@@ -21,6 +21,7 @@ public class DateElement {
     boolean hasAmPm = false;
     String timeFragment = null;
     String dateFragment = null;
+    char dateTimeSeprator;
 
     public DateElement(String data, int tokenNum, int fragments) {
         this.data = data;
@@ -115,10 +116,22 @@ public class DateElement {
     public void setDateFragment(String dateFragment) {
         this.dateFragment = dateFragment;
     }
+    
+    public char getDateTimeSeprator() {
+		return dateTimeSeprator;
+	}
 
-    @Override
-    public String toString() {
-        return "DateElement{" + "data=" + data + ", tokenNum=" + tokenNum + ", fragments=" + fragments + ", isAlphaNumeric=" + isAlphaNumeric + ", aphaNumericType=" + aphaNumericType + ", startPos=" + startPos + ", endPos=" + endPos + ", hasAmPm=" + hasAmPm + ", timeFragment=" + timeFragment + ", dateFragment=" + dateFragment + '}';
-    }
+	public void setDateTimeSeprator(char dateTimeSeprator) {
+		this.dateTimeSeprator = dateTimeSeprator;
+	}
+
+	@Override
+	public String toString() {
+		return "DateElement [data=" + data + ", tokenNum=" + tokenNum + ", fragments=" + fragments + ", isAlphaNumeric=" + isAlphaNumeric + ", aphaNumericType=" + aphaNumericType
+				+ ", startPos=" + startPos + ", endPos=" + endPos + ", hasAmPm=" + hasAmPm + ", timeFragment=" + timeFragment + ", dateFragment=" + dateFragment
+				+ ", dateTimeSeprator=" + dateTimeSeprator + "]";
+	}
+
+
 
 }

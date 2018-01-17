@@ -86,6 +86,21 @@ public class Helper {
 	}
 
 	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
+	private static boolean hasFullMonthLiteral(String s) {
+		s = s.toLowerCase();
+		for (String c : Dictionary.MONTH_FULL) {
+			if (s.contains(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 *
 	 * @param s
 	 * @return
@@ -162,6 +177,25 @@ public class Helper {
 			return true;
 		}
 		if (c == ':') {
+			return true;
+		}
+		if (c == '_') {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isTimeSeprator(char c) {
+		if (c == ' ') {
+			return true;
+		}
+		if (c == '_') {
+			return true;
+		}
+		if (c == '-') {
+			return true;
+		}
+		if (c == 'T') {
 			return true;
 		}
 		return false;
@@ -281,5 +315,72 @@ public class Helper {
 			return "dec";
 		}
 		return "";
+	}
+
+	public static boolean isFullMonth(String s) {
+		s = s.toLowerCase();
+		if (s.contains("january")) {
+			return true;
+		}
+		if (s.contains("february")) {
+			return true;
+		}
+		if (s.contains("march")) {
+			return true;
+		}
+		if (s.contains("april")) {
+			return true;
+		}
+		if (s.contains("may")) {
+			return true;
+		}
+		if (s.contains("june")) {
+			return true;
+		}
+		if (s.contains("july")) {
+			return true;
+		}
+		if (s.contains("august")) {
+			return true;
+		}
+		if (s.contains("september")) {
+			return true;
+		}
+		if (s.contains("october")) {
+			return true;
+		}
+		if (s.contains("november")) {
+			return true;
+		}
+		if (s.contains("december")) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static int getDaysinMonth(int i, int year) {
+		if (i > 12) {
+			return -1;
+		}
+		if (i == 2) {
+			if (i % 4 == 0) {
+				return 29;
+			}
+			return 28;
+		}
+		if (i == 8) {
+			return 31;
+		}
+		if (i < 8 && i % 2 == 1) {
+			return 31;
+		}
+		if (i < 8 && i % 2 == 0) {
+			return 30;
+		}
+		if (i % 2 == 1) {
+			return 30;
+		}
+		return 31;
 	}
 }

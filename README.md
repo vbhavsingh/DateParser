@@ -8,5 +8,21 @@ Use with maven
         <dependency>
             <groupId>net.rationalminds</groupId>
             <artifactId>DateParser</artifactId>
-            <version>0.4.0</version>
+            <version>1.0.0</version>
         </dependency>
+
+Supported Date formats
+
+DD[]MM[MMM][]YY[YY]
+MM[MMM][]DD[]YY[YY]
+YY[YY][]MM[MMM][]DD
+
+Supported Date Time formats
+
+DD[]MM[MMM][]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
+MM[MMM][]DD[]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
+YY[YY][]MM[MMM][]DD{}HH[24]:mm:ss[.SSS][][AM|PM]
+
+
+*[] Delimiter like / \ - _ . | whitescape etc
+*{} Delimiter  _ T whitescape 
