@@ -112,16 +112,30 @@ public class Dictionary {
 		PATTERN.add("M*D*DDDD");
 		PATTERN.add("M*DD*DD");
 		PATTERN.add("M*D*DD");
+		PATTERN.add("M*DD**DDDD");
+		PATTERN.add("M*D**DDDD");
+		PATTERN.add("M*DD**DD");
+		PATTERN.add("M*D**DD");
 
 		TIME_PATTERN.add("DD:DD:DD");
-		TIME_PATTERN.add("DD:DD:DD am");
-		TIME_PATTERN.add("DD:DD:DD pm");
+		// For AM PM verification
+		TIME_PATTERN.add("DD:DD:DD ");
 		TIME_PATTERN.add("DD:DD:DD.DDD");
+		// For AM PM verification
+		TIME_PATTERN.add("DD:DD:DD.DDD ");
 		TIME_PATTERN.add("DD:DD:DD,DDD");
-		TIME_PATTERN.add("DD:DD:DD.DDD am");
-		TIME_PATTERN.add("DD:DD:DD.DDD pm");
-		TIME_PATTERN.add("DD:DD:DD,DDD am");
-		TIME_PATTERN.add("DD:DD:DD,DDD pm");
+		// For AM PM verification
+		TIME_PATTERN.add("DD:DD:DD,DDD ");
+		
+		TIME_PATTERN.add("D:DD:DD");
+		// For AM PM verification
+		TIME_PATTERN.add("D:DD:DD ");
+		TIME_PATTERN.add("D:DD:DD.DDD");
+		// For AM PM verification
+		TIME_PATTERN.add("D:DD:DD.DDD ");
+		TIME_PATTERN.add("D:DD:DD,DDD");
+		// For AM PM verification
+		TIME_PATTERN.add("D:DD:DD,DDD ");
 
 
 		monthPredictionTree.level = 0;

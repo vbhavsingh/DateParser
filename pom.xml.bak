@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.rationalminds</groupId>
 	<artifactId>DateParser</artifactId>
-	<version>1.1</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 <!-- mvn clean deploy -->
-	<name>DateParser</name>
-	<description>auto date pattern identification and extraction</description>
-	<url>http://rationalminds.net</url>
+	<name>Maven core</name>
+	<description>The maven main core project description</description>
+	<url>http://maven.apache.org</url>
 
 	<licenses>
 		<license>

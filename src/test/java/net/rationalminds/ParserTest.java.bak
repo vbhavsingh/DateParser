@@ -776,47 +776,30 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void testValidTimePatternWxMxDDxDDDD_T1() {
+	public void testValidTimePatternWxMxDDxDDDD() {
 		String pattern = "december 19 1998 10:10:58.123";
 		LocalDateModel date = p.parse(pattern).get(0);
 		Assert.assertTrue(date.getDateTimeString().contains("10:10:58.123"));
-	}
-	
-	@Test
-	public void testValidTimePatternWxMxDDxDDDD_T2() {	
-		String pattern = "december 19 1998 10:10:58.123   ";
-		LocalDateModel date = p.parse(pattern).get(0);
+		
+		pattern = "december 19 1998 10:10:58.123   ";
+		date = p.parse(pattern).get(0);
 		Assert.assertTrue(date.getDateTimeString().contains("10:10:58.123"));
 		Assert.assertEquals(date.getIdentifiedDateFormat(), "MMMMM DD YYYY HH:mm:ss.SSS");
-	}
-	
-	@Test
-	public void testValidTimePatternWxMxDDxDDDD_T3() {	
-		String pattern = "december 19, 1998 10:10:58.123   ";
-		LocalDateModel date = p.parse(pattern).get(0);
-		Assert.assertTrue(date.getDateTimeString().contains("10:10:58.123"));
-		Assert.assertEquals(date.getIdentifiedDateFormat(), "MMMMM DD, YYYY HH:mm:ss.SSS");
-	}
-	
-	@Test
-	public void testValidTimePatternWxMxDDxDDDD() {		
-		String pattern = "Identified date : 27 Jan,2017 16:14:10, converted";
-		LocalDateModel date = p.parse(pattern).get(0);
+		
+		pattern = "Identified date : 27 Jan,2017 16:14:10, converted";
+		date = p.parse(pattern).get(0);
 		Assert.assertTrue(date.getDateTimeString().contains("16:14:10"));
 		Assert.assertEquals(date.getIdentifiedDateFormat(), "DD MMM,YYYY HH:mm:ss");
 	}
 
 	@Test
-	public void testValidTimePatternDateXTime_T1() {
+	public void testValidTimePatternDateXTime() {
 		String pattern = "2017-Jul-10_14:25:21";
 		LocalDateModel date = p.parse(pattern).get(0);
 		Assert.assertTrue(date.getDateTimeString().contains("14:25:21"));
-	}
-	
-	@Test
-	public void testValidTimePatternDateXTime_T2() {	
-		String pattern = "  2017-January-10_14:25:21       ";
-		LocalDateModel date = p.parse(pattern).get(0);
+		
+		pattern = "  2017-January-10_14:25:21       ";
+		date = p.parse(pattern).get(0);
 		Assert.assertTrue(date.getDateTimeString().contains("14:25:21"));
 		Assert.assertEquals(date.getIdentifiedDateFormat(), "YYYY-MMMMM-DD_HH:mm:ss");
 		
@@ -834,34 +817,4 @@ public class ParserTest {
 		Assert.assertEquals(date.getIdentifiedDateFormat(), "YYYY-MMMMM-DD'T'HH:mm:ss.SSS");
 		
 	} 
-	
-	@Test
-	public void testValidTimePatternDoubleDelimated() {
-		String pattern = "Feb 21, 2018 com";
-		LocalDateModel date = p.parse(pattern).get(0);
-		Assert.assertTrue(date.getOriginalText().contains("feb 21"));
-	}
-	
-	@Test
-	public void testValidTimePatternForSingleDigitHrMinSec() {
-		String pattern = "Feb 21, 2018 5:27:31 com";
-		LocalDateModel date = p.parse(pattern).get(0);
-		Assert.assertTrue(date.getOriginalText().contains("5:27:31"));
-	}
-	
-	@Test
-	public void testValidTimePatternWithAm() {
-		String pattern = "Feb 21, 2018 5:27:31 AM com";
-		LocalDateModel date = p.parse(pattern).get(0);
-		Assert.assertTrue(date.getOriginalText().contains("5:27:31 AM"));
-	}
-	
-	@Test
-	public void testValidTimePatternWithPm() {
-		String pattern = "Feb 21, 2018 5:27:31 PM com";
-		LocalDateModel date = p.parse(pattern).get(0);
-		Assert.assertTrue(date.getOriginalText().contains("5:27:31 PM"));
-		
-		Assert.assertTrue(date.getIdentifiedDateFormat().equals("MMM DD, YYYY HH:mm:ss a"));
-	}
 }

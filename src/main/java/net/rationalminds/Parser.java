@@ -51,9 +51,16 @@ public class Parser {
 				if(delims.length()==2) {
 					foundFormat=foundFormat.replaceAll("\\$", String.valueOf(delims.charAt(0)));
 					foundFormat=foundFormat.replaceAll("&", String.valueOf(delims.charAt(1)));
+				}				
+				if(delims.length()==3) {
+					foundFormat=foundFormat.replaceAll("\\$", String.valueOf(delims.charAt(0)));
+					foundFormat=foundFormat.replaceAll("&", String.valueOf(delims.charAt(1))+String.valueOf(delims.charAt(2)));
 				}
 				if(element.isIsAlphaNumeric() && Helper.isFullMonth(element.getData())) {
 					foundFormat = foundFormat.replaceAll("MMM", "MMMMM");
+				}
+				if(element.isHasAmPm()) {
+					foundFormat = foundFormat+" "+"a";
 				}
 				localdate.setIdentifiedDateFormat(foundFormat);
 				dateGroups.add(localdate);
@@ -426,7 +433,7 @@ public class Parser {
 	 */
 	private List<DateElement> getDateGroups(String text) {
 		List<DateElement> dateGroups = null;
-		char possibleDate[] = new char[29];
+		char possibleDate[] = new char[30];
 		char possibleTime[] = new char[17];
 		int i = 0;
 		boolean endFoundEarlier = false;
@@ -491,7 +498,7 @@ public class Parser {
 					continue;
 				} else {
 					if (timeDetermined) {
-						if (count == text.length() - 1 || c == 32) {
+						if (count == text.length() - 1) {
 							dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength, dateTimeSeprator);
 							searchForTimePiece = false;
 							possibleDate = nullifyBuffer(possibleDate);
@@ -503,6 +510,33 @@ public class Parser {
 							timeFrgLength = 0;
 							continue;
 						}/* bug fixed dated 12/15/2017*/
+						if(c==32) {
+							try {
+								String nextChar = String.valueOf(text.charAt(count+1))+String.valueOf(text.charAt(count+2));
+								if("am".equalsIgnoreCase(nextChar) || "pm".equalsIgnoreCase(nextChar)) {
+									possibleTime[timeFrgLength++] = c;
+									possibleDate[i++] = c;
+									
+									possibleTime[timeFrgLength++] = text.charAt(count+1);
+									possibleDate[i++] = text.charAt(count+1);
+									
+									possibleTime[timeFrgLength++] = text.charAt(count+2);
+									possibleDate[i++] = text.charAt(count+2);
+								}
+							}catch(StringIndexOutOfBoundsException ex) {
+								//Nullify buffer after catch block
+							}
+							dateGroups = addTimeFragment(dateGroups, possibleDate, possibleTime, count, i, timeFrgLength, dateTimeSeprator);
+							searchForTimePiece = false;
+							possibleDate = nullifyBuffer(possibleDate);
+							possibleTime = nullifyBuffer(possibleTime);
+							endFoundEarlier = false;
+							time = Dictionary.timePredictionTree;
+							i = 0;
+							whitespaceCount = 0;
+							timeFrgLength = 0;
+							continue;
+						}
 					}else {
 						if(count == text.length() - 1 && time.explictDateFragment == true) {
 							if(Helper.isDigit(c)) {
@@ -741,7 +775,8 @@ public class Parser {
 		ele.setEndPos(count);
 		//ele.setStartPos(count - i);
 		ele.setTimeFragment(new String(possibleTime).trim());
-		if (possibleTime[timeFrgLength - 1] == 'm') {
+		String ampm = String.valueOf(possibleTime[timeFrgLength - 2]) + String.valueOf(possibleTime[timeFrgLength - 1]);
+		if ("am".equalsIgnoreCase(ampm) || "pm".equalsIgnoreCase(ampm)) {
 			ele.setHasAmPm(true);
 		}
 		ele.setDateTimeSeprator(dateTimeSeprator);
