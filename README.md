@@ -8,7 +8,7 @@ Use with maven
         <dependency>
             <groupId>net.rationalminds</groupId>
             <artifactId>DateParser</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
 
 Supported Date formats
@@ -24,6 +24,8 @@ Supported Date Time formats
 DD[]MM[MMM][]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
 
 MM[MMM][]DD[]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
+
+MM[MMM][]DD,[]YY[YY]{}HH[24]:mm:ss[.SSS][][AM|PM]
 
 YY[YY][]MM[MMM][]DD{}HH[24]:mm:ss[.SSS][][AM|PM]
 
