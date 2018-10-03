@@ -8,7 +8,7 @@ Use with maven
         <dependency>
             <groupId>net.rationalminds</groupId>
             <artifactId>DateParser</artifactId>
-            <version>1.1</version>
+            <version>1.4</version>
         </dependency>
 
 Supported Date formats
