@@ -28,7 +28,6 @@ public class Parser {
 	 * Provides the {@link List} of {@link LocalDateModel} as output
 	 * 
 	 * @param text
-	 *            source text
 	 * @return
 	 */
 	public List<LocalDateModel> parse(String text) {
@@ -104,17 +103,17 @@ public class Parser {
 				if (year > 31) {
 					/*determine the format of year to find out present date format*/
 					if(year < 99) {
-						presentDateFormat ="YY$";
+						presentDateFormat ="yy$";
 					}
 					else if(year > 999 && year < 10000) {
-						presentDateFormat ="YYYY$";
+						presentDateFormat ="yyyy$";
 					}
 					if (Helper.isDigit(t2)) {
-						presentDateFormat = presentDateFormat +"DD&MMM";
+						presentDateFormat = presentDateFormat +"dd&MMM";
 						day = Integer.parseInt(t2);
 						month = monthToDigit(t3);
 					} else {
-						presentDateFormat = presentDateFormat +"MMM&DD";
+						presentDateFormat = presentDateFormat +"MMM&dd";
 						month = monthToDigit(t2);
 						day = Integer.parseInt(t3);
 					}
@@ -140,17 +139,17 @@ public class Parser {
 				if (year > 31) {
 					/*determine the format of year to find out present date format*/
 					if(year < 99) {
-						presentDateFormat ="YY";
+						presentDateFormat ="yy";
 					}
 					else if(year > 999 && year < 10000) {
-						presentDateFormat ="YYYY";
+						presentDateFormat ="yyyy";
 					}
 					if (Helper.isDigit(t1)) {
-						presentDateFormat = "DD$MMM&" + presentDateFormat;
+						presentDateFormat = "dd$MMM&" + presentDateFormat;
 						day = Integer.parseInt(t1);
 						month = monthToDigit(t2);
 					} else {
-						presentDateFormat = "MMM$DD&" + presentDateFormat;
+						presentDateFormat = "MMM$dd&" + presentDateFormat;
 						month = monthToDigit(t1);
 						day = Integer.parseInt(t2);
 					}
@@ -166,6 +165,10 @@ public class Parser {
 			}
 
 		} else {
+			//Since 'T' and '_' is considered as delimiter in Date Time seprator. If 'T' or '_' apperas in date as seprator, neglect that as invlaid date
+			if(s.contains("T") || s.contains("_")) {
+				return null;
+			}
 			StringTokenizer tokenizer = new StringTokenizer(s, delim);
 			int d1 = Integer.parseInt(tokenizer.nextToken());
 			int d2 = Integer.parseInt(tokenizer.nextToken());
@@ -273,6 +276,8 @@ public class Parser {
 				hour = hour + 12;
 				probableTimeFormat = probableTimeFormat+" aaa";
 			}
+			format = format.replace("HH", "hh");
+			probableTimeFormat = probableTimeFormat.replace("HH", "hh");
 		}
 		if (hour < 24 && min < 60 && sec < 60 && mils < 10000) {
 			String timePiece;
@@ -311,10 +316,10 @@ public class Parser {
 			if (localDate != null) {
 				// localDate.setConDateFormat("DD-MM-YYYY");
 				if(pYear > 9 & pYear < 100) {
-					localDate.setIdentifiedDateFormat("DD$MM&YY");
+					localDate.setIdentifiedDateFormat("dd$MM&yy");
 				}
 				if(pYear > 99 & pYear < 10000) {
-					localDate.setIdentifiedDateFormat("DD$MM&YYYY");
+					localDate.setIdentifiedDateFormat("dd$MM&yyyy");
 				}
 				return localDate;
 			}
@@ -326,10 +331,10 @@ public class Parser {
 			if (localDate != null) {
 				// localDate.setConDateFormat("MM-DD-YYYY");
 				if(pYear > 9 & pYear < 100) {
-					localDate.setIdentifiedDateFormat("MM$DD&YY");
+					localDate.setIdentifiedDateFormat("MM$dd&yy");
 				}
 				if(pYear > 99 & pYear < 10000) {
-					localDate.setIdentifiedDateFormat("MM$DD&YYYY");
+					localDate.setIdentifiedDateFormat("MM$dd&yyyy");
 				}
 				return localDate;
 			}
@@ -342,10 +347,10 @@ public class Parser {
 			if (localDate != null) {
 				// localDate.setConDateFormat("MM-DD-YYYY");
 				if(pYear > 9 & pYear < 100) {
-					localDate.setIdentifiedDateFormat("MM$DD&YY");
+					localDate.setIdentifiedDateFormat("MM$dd&yy");
 				}
 				if(pYear > 99 & pYear < 10000) {
-					localDate.setIdentifiedDateFormat("MM$DD&YYYY");
+					localDate.setIdentifiedDateFormat("MM$dd&yyyy");
 				}
 				return localDate;
 			}
@@ -372,11 +377,11 @@ public class Parser {
 		// month should be between 1 & 12, else its not a date
 		if (pMonth > 0 && pMonth < 13) {
 			month = pMonth;
-			formatProbable = "MM&DD";
+			formatProbable = "MM&dd";
 		}else if(pMonth > 12 && pDay < 13) {
 			month=pDay;
 			pDay = pMonth;
-			formatProbable = "DD&MM";
+			formatProbable = "dd&MM";
 		}else {
 			return null;
 		}
@@ -413,10 +418,10 @@ public class Parser {
 			localdate.setDateTimeString(String.format("%04d", year) + "-" + String.format("%02d", month) + "-" + String.format("%02d", day));
 			localdate.setConDateFormat("yyyy-MM-dd");
 			if(year > 9 & year < 100 ) {
-				formatProbable = "YY$" + formatProbable;
+				formatProbable = "yy$" + formatProbable;
 			}
 			if(year > 999 & year < 10000){
-				formatProbable = "YYYY$" + formatProbable;
+				formatProbable = "yyyy$" + formatProbable;
 			}
 			localdate.setIdentifiedDateFormat(formatProbable);
 			return localdate;
@@ -458,6 +463,7 @@ public class Parser {
 			
 			if (i == 0) {
 				tree = Dictionary.patternPredictionTree;
+				isAlpaNumeric = false;
 			}
 			
 			// check for whitespace series
@@ -650,6 +656,7 @@ public class Parser {
 					if (endFoundEarlier) {
 						dateGroups = addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
 						endFoundEarlier = false;
+						isAlpaNumeric = false;
 						if (Helper.isTimeSeprator(c)) {
 							searchForTimePiece = true;
 							possibleDate[i++] = c;
@@ -673,6 +680,7 @@ public class Parser {
 					// date in date group as loop is terminated afterwards.
 					if (count == text.length() - 1 && endFoundEarlier) {
 						dateGroups = addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
+						isAlpaNumeric = false;
 						break;
 					}
 				}
@@ -699,6 +707,7 @@ public class Parser {
 					 */
 					if (endFoundEarlier) {
 						dateGroups = addDateFragment(dateGroups, possibleDate, count, timeFrgLength + i + whitespaceCount, isAlpaNumeric);
+						isAlpaNumeric = false;
 						endFoundEarlier = false;
 					}
 					possibleDate = nullifyBuffer(possibleDate);

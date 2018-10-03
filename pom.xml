@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.rationalminds</groupId>
 	<artifactId>DateParser</artifactId>
-	<version>1.1</version>
+	<version>1.4</version>
 	<packaging>jar</packaging>
-<!-- mvn clean deploy -->
+<!-- mvn clean deploy  -Dadditionalparam=-Xdoclint:none-->
 	<name>DateParser</name>
 	<description>auto date pattern identification and extraction</description>
 	<url>http://rationalminds.net</url>

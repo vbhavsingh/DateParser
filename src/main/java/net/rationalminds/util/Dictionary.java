@@ -219,7 +219,7 @@ public class Dictionary {
 			}
 		}
 		printBuffer.append(line);
-		//System.out.println(printBuffer.toString());
+		System.out.println(printBuffer.toString());
 
 	}
 
@@ -573,7 +573,6 @@ public class Dictionary {
 		PredictionModelNode tree = new PredictionModelNode();
 		buildTree(treeElements, tree);
 		tree = sortTree(tree);
-		printTree(tree);
 		return getRegexPattern(tree);
 	}
 	
